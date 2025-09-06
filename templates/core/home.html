@@ -1,0 +1,134 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home | Job Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="py-5 text-center bg-light">
+  <div class="container">
+    <div class="row py-lg-5">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <h1 class="fw-bold">Find Your Dream Job Today</h1>
+        <p class="lead text-muted">
+          Discover thousands of job opportunities with top companies. The right
+          career is waiting for you.
+        </p>
+        <div class="d-flex justify-content-center gap-2 mt-4">
+          <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg px-4">
+            Browse Jobs
+          </a>
+          <a href="{% url 'accounts:register' %}" class="btn btn-outline-secondary btn-lg px-4">
+            Sign Up
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Search Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="card border-0 shadow">
+      <div class="card-body p-4">
+        <h3 class="card-title mb-4 text-center">Search Jobs</h3>
+        <form method="get" action="{% url 'jobs:job_list' %}">
+          <div class="row g-3">
+            <div class="col-md-5">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="keyword"
+                  name="keyword"
+                  placeholder="Job title, keywords, or company"
+                />
+                <label for="keyword">What</label>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="form-floating">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="location"
+                  name="location"
+                  placeholder="City, state, or zip code"
+                />
+                <label for="location">Where</label>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="submit" class="btn btn-primary w-100 h-100">
+                Search
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Jobs Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <h2>Recent Job Listings</h2>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-primary">
+          View All Jobs
+        </a>
+      </div>
+    </div>
+
+    {% if recent_jobs %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for job in recent_jobs %}
+      <div class="col">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">
+              <a href="{% url 'jobs:job_detail' job.id %}" class="text-decoration-none">
+                {{ job.title }}
+              </a>
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+            <p class="card-text">
+              <span class="badge bg-info text-dark">
+                {{ job.get_job_type_display|default_if_none:"" }}
+              </span>
+              <span class="badge bg-secondary">
+                {{ job.location|default_if_none:"" }}
+              </span>
+              <span class="badge bg-warning text-dark">
+                {{ job.get_salary_display|default_if_none:"" }}
+              </span>
+            </p>
+            <p class="card-text">{{ job.description|truncatewords:20 }}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <small class="text-muted">
+              Posted {{ job.created_at|timesince }} ago
+            </small>
+            <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-sm btn-outline-primary">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      <p class="mb-0">
+        No job listings available at the moment. Check back soon!
+      </p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Job Approval | Job
+Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="mb-0">Job Approval</h1>
+      <p class="text-muted">Review and approve or reject this job listing</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a
+        href="{% url 'dashboard:job_moderation' %}"
+        class="btn btn-outline-primary"
+      >
+        <i class="bi bi-arrow-left me-1"></i>Back to Moderation
+      </a>
+    </div>
+  </div>
+
+  {% if messages %} {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %}
+
+  <!-- Job Details Card -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div
+      class="card-header bg-white py-3 d-flex justify-content-between align-items-center"
+    >
+      <h5 class="card-title mb-0">Job Details</h5>
+      <div>
+        {% if job.is_approved %}
+        <span class="badge bg-success">Approved</span>
+        {% elif not job.is_active %}
+        <span class="badge bg-secondary">Inactive</span>
+        {% else %}
+        <span class="badge bg-warning text-dark">Pending</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row mb-4">
+        <div class="col-lg-8">
+          <h3 class="mb-1">{{ job.title }}</h3>
+          <h6 class="text-muted mb-3">
+            {{ job.company }} • {{ job.location }}
+          </h6>
+
+          <div class="mb-3">
+            <span class="badge bg-info text-dark me-2"
+              >{{ job.get_job_type_display }}</span
+            >
+            <span class="badge bg-warning text-dark"
+              >{{ job.get_salary_display }}</span
+            >
+          </div>
+
+          <div class="mb-4">
+            <p>
+              <strong>Posted by:</strong> {{ job.user.email }} on {{
+              job.created_at|date:"F d, Y" }}
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-4">
+          <!-- Approval Action Buttons -->
+          <div class="card bg-light">
+            <div class="card-body">
+              <h5 class="card-title">Moderation Actions</h5>
+              <form method="post">
+                {% csrf_token %}
+                <div class="d-grid gap-2">
+                  <button
+                    type="submit"
+                    name="action"
+                    value="approve"
+                    class="btn btn-success"
+                  >
+                    <i class="bi bi-check-circle me-1"></i>Approve Job
+                  </button>
+                  <button
+                    type="submit"
+                    name="action"
+                    value="reject"
+                    class="btn btn-danger"
+                  >
+                    <i class="bi bi-x-circle me-1"></i>Reject Job
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <h5>Job Description</h5>
+          <div class="mb-4">{{ job.description|linebreaks }}</div>
+
+          <h5>Requirements</h5>
+          <div class="mb-4">{{ job.requirements|linebreaks }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

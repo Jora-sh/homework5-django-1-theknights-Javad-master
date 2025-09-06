@@ -1,0 +1,53 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}
+Job {{ status_display }} - Job Portal
+{% endblock %}
+
+{% block header %}
+Job {{ status_display }}
+{% endblock %}
+
+{% block content %}
+<p>Hi {{ employer.first_name }},</p>
+
+<div class="alert alert-{{ status_class }}">
+  <strong>Your job posting has been {{ status_display|lower }}!</strong>
+</div>
+
+<div class="details">
+  <h3>{{ job.title }}</h3>
+  <p><strong>Company:</strong> {{ job.company }}</p>
+  <p><strong>Location:</strong> {{ job.location }}</p>
+  <p>
+    <strong>Status:</strong>
+    <span class="status status-{{ status_class }}">{{ status_display }}</span>
+  </p>
+</div>
+
+{% if status == 'approved' %}
+<p>
+  Your job posting is now live and visible to job seekers. You will be notified
+  when candidates apply for this position.
+</p>
+{% else %}
+<p>
+  Your job posting was not approved. Please review the feedback below and make
+  the necessary adjustments:
+</p>
+<div class="alert alert-info">
+  {{ feedback|default:"No specific feedback provided. Please ensure your job posting follows our guidelines." }}
+</div>
+{% endif %}
+
+<p>You can view your job posting by clicking the button below:</p>
+
+<a href="{{ site_url }}{% url 'jobs:job_detail' job.id %}" class="button">
+  View Job Posting
+</a>
+
+<p>
+  Best regards,<br>
+  The Job Portal Team
+</p>
+{% endblock %}

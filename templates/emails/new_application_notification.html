@@ -1,0 +1,52 @@
+{% extends "emails/base_email.html" %} {% block title %}New Job Application
+Received - Job Portal{% endblock %} {% block header %}New Job Application{%
+endblock %} {% block content %}
+<p>Hi {{ employer.first_name }},</p>
+
+<div class="alert alert-info">
+  <strong>You have received a new job application!</strong>
+</div>
+
+<div class="details">
+  <h3>Job Details:</h3>
+  <p><strong>Position:</strong> {{ job.title }}</p>
+  <p><strong>Company:</strong> {{ job.company }}</p>
+  <p><strong>Location:</strong> {{ job.location }}</p>
+</div>
+
+<div class="details">
+  <h3>Applicant Information:</h3>
+  <p><strong>Name:</strong> {{ applicant.get_full_name }}</p>
+  <p><strong>Email:</strong> {{ applicant.email }}</p>
+  {% if applicant.phone %}
+  <p><strong>Phone:</strong> {{ applicant.phone }}</p>
+  {% endif %} {% if applicant.experience %}
+  <p><strong>Experience:</strong> {{ applicant.experience }}</p>
+  {% endif %}
+</div>
+
+{% if application.cover_letter %}
+<div class="details">
+  <h3>Cover Letter:</h3>
+  <p>{{ application.cover_letter }}</p>
+</div>
+{% endif %}
+
+<p>You can review this application by clicking the button below:</p>
+
+<a
+  href="{{ site_url }}{% url 'dashboard:application_detail' application.id %}"
+  class="button"
+  >Review Application</a
+>
+
+<p>
+  Please review the application and take appropriate action through your
+  dashboard.
+</p>
+
+<p>
+  Best regards,<br />
+  The Job Portal Team
+</p>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %} {% block title %}Select Your Role | Job Portal{%
+endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Select Your Role</h2>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="mb-4 text-center">
+              <p>
+                Please select your role to complete your registration with
+                Google:
+              </p>
+            </div>
+
+            <div class="d-grid gap-3">
+              <button
+                type="submit"
+                name="role"
+                value="seeker"
+                class="btn btn-primary btn-lg"
+              >
+                <i class="fas fa-user-tie me-2"></i>Job Seeker
+              </button>
+              <button
+                type="submit"
+                name="role"
+                value="employer"
+                class="btn btn-secondary btn-lg"
+              >
+                <i class="fas fa-building me-2"></i>Employer
+              </button>
+            </div>
+
+            <input
+              type="hidden"
+              name="partial_token"
+              value="{{ partial_token }}"
+            />
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,200 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Admin Dashboard |
+Job Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="mb-0">Admin Dashboard</h1>
+      <p class="text-muted">
+        Welcome, {{ user.first_name }}! Manage job listings and applications.
+      </p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="{% url 'dashboard:job_moderation' %}" class="btn btn-primary">
+        <i class="bi bi-shield-check me-2"></i>Moderate Jobs
+      </a>
+    </div>
+  </div>
+
+  {% if messages %} {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %}
+
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-muted mb-1">Total Jobs</h6>
+              <h2 class="mb-0">{{ total_jobs }}</h2>
+            </div>
+            <div class="bg-light p-3 rounded">
+              <i class="bi bi-briefcase fs-3 text-primary"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-muted mb-1">Active Jobs</h6>
+              <h2 class="mb-0">{{ active_jobs }}</h2>
+            </div>
+            <div class="bg-light p-3 rounded">
+              <i class="bi bi-check-circle fs-3 text-success"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-muted mb-1">Pending Approval</h6>
+              <h2 class="mb-0">{{ pending_approval }}</h2>
+            </div>
+            <div class="bg-light p-3 rounded">
+              <i class="bi bi-hourglass-split fs-3 text-warning"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h6 class="text-muted mb-1">Applications</h6>
+              <h2 class="mb-0">{{ total_applications }}</h2>
+            </div>
+            <div class="bg-light p-3 rounded">
+              <i class="bi bi-file-earmark-person fs-3 text-info"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Jobs Pending Approval -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div
+      class="card-header bg-white py-3 d-flex justify-content-between align-items-center"
+    >
+      <h5 class="card-title mb-0">Jobs Pending Approval</h5>
+      <a
+        href="{% url 'dashboard:job_moderation' %}"
+        class="btn btn-sm btn-outline-primary"
+        >View All</a
+      >
+    </div>
+    <div class="card-body p-0">
+      {% if pending_jobs %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Employer</th>
+              <th>Posted On</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in pending_jobs %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'jobs:job_detail' job.id %}"
+                  class="text-decoration-none fw-bold"
+                >
+                  {{ job.title }}
+                </a>
+              </td>
+              <td>{{ job.company }}</td>
+              <td>{{ job.user.email }}</td>
+              <td>{{ job.created_at|date:"M d, Y" }}</td>
+              <td>
+                <a
+                  href="{% url 'dashboard:job_approval' job.id %}"
+                  class="btn btn-sm btn-primary"
+                  >Review</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <i class="bi bi-check2-all fs-1 text-muted"></i>
+        </div>
+        <h5>No Jobs Pending Approval</h5>
+        <p class="mb-0">All jobs have been reviewed.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Top Employers -->
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white py-3">
+      <h5 class="card-title mb-0">Top Employers</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if top_employers %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Employer</th>
+              <th>Company</th>
+              <th>Jobs Posted</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for employer in top_employers %}
+            <tr>
+              <td>
+                <div class="fw-bold">
+                  {{ employer.user__first_name }} {{ employer.user__last_name }}
+                </div>
+                <div class="small text-muted">{{ employer.user__email }}</div>
+              </td>
+              <td>{{ employer.user__company_name|default:"Not specified" }}</td>
+              <td>{{ employer.job_count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <p class="mb-0">No employer data available.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

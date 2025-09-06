@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h2>Search Jobs</h2>
+            <form method="get" class="form-inline">
+                <div class="input-group mb-3">
+                    <input type="text" name="q" class="form-control" placeholder="Search for jobs..." value="{{ request.GET.q }}">
+                    <input type="text" name="location" class="form-control" placeholder="Location" value="{{ request.GET.location }}">
+                    <select name="job_type" class="form-control">
+                        <option value="">All Job Types</option>
+                        {% for type, label in search_form.fields.job_type.choices %}
+                        <option value="{{ type }}" {% if request.GET.job_type == type %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if jobs %}
+                <h3>Search Results ({{ jobs|length }} found)</h3>
+                {% for job in jobs %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a>
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+                            <p class="card-text">
+                                <i class="fas fa-map-marker-alt"></i> {{ job.location }}<br>
+                                <i class="fas fa-briefcase"></i> {{ job.get_job_type_display }}<br>
+                                <i class="fas fa-money-bill-wave"></i> {{ job.get_salary_display }}
+                            </p>
+                            <p class="card-text">{{ job.description|truncatewords:50 }}</p>
+                            <p class="card-text"><small class="text-muted">Posted {{ job.created_at|timesince }} ago</small></p>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {% include "jobs/pagination.html" %}
+            {% else %}
+                <div class="alert alert-info">
+                    No jobs found matching your search criteria.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

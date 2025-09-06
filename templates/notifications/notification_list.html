@@ -1,0 +1,167 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Notifications | Job
+Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="mb-0">Notifications</h1>
+      <p class="text-muted">View all your notifications and updates</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="#" id="markAllReadBtn" class="btn btn-outline-primary">
+        <i class="bi bi-check2-all me-1"></i>Mark all as read
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          {% if page_obj %} {% for notification in page_obj %}
+          <div
+            class="notification-item p-3 border-bottom {% if not notification.is_read %}bg-light{% endif %}"
+            data-notification-id="{{ notification.id }}"
+          >
+            <div class="d-flex align-items-center">
+              <div class="flex-grow-1">
+                {% if notification.notification_type == 'job_application' %}
+                <i class="bi bi-file-earmark-person text-primary me-2"></i>
+                {% elif notification.notification_type == 'job_approved' %}
+                <i class="bi bi-check-circle text-success me-2"></i>
+                {% elif notification.notification_type == 'job_rejected' %}
+                <i class="bi bi-x-circle text-danger me-2"></i>
+                {% elif notification.notification_type == 'application_status'
+                %}
+                <i class="bi bi-arrow-clockwise text-info me-2"></i>
+                {% else %}
+                <i class="bi bi-bell text-primary me-2"></i>
+                {% endif %}
+                <h6 class="mb-1">{{ notification.title }}</h6>
+                <p class="mb-1">{{ notification.message }}</p>
+                <small class="text-muted"
+                  >{{ notification.created_at|timesince }} ago</small
+                >
+              </div>
+              {% if not notification.is_read %}
+              <div class="ms-3">
+                <span class="badge bg-primary rounded-pill">New</span>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %} {% if page_obj.has_other_pages %}
+          <div class="p-3">
+            <nav>
+              <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a
+                    class="page-link"
+                    href="?page={{ page_obj.previous_page_number }}"
+                    >&laquo;</a
+                  >
+                </li>
+                {% endif %} {% for i in page_obj.paginator.page_range %} {% if
+                page_obj.number == i %}
+                <li class="page-item active">
+                  <span class="page-link">{{ i }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                </li>
+                {% endif %} {% endfor %} {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a
+                    class="page-link"
+                    href="?page={{ page_obj.next_page_number }}"
+                    >&raquo;</a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </nav>
+          </div>
+          {% endif %} {% else %}
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="bi bi-bell fs-1 text-muted"></i>
+            </div>
+            <h5>No Notifications</h5>
+            <p class="text-muted mb-0">You don't have any notifications yet.</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const notifications = document.querySelectorAll('.notification-item[data-notification-id]');
+
+    markAllReadBtn.addEventListener('click', async function(e) {
+      e.preventDefault();
+      try {
+        const response = await fetch('{% url "notifications:mark_all_read" %}', {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          },
+        });
+        if (response.ok) {
+          // Remove all "New" badges and background highlights
+          notifications.forEach(notification => {
+            notification.classList.remove('bg-light');
+            const badge = notification.querySelector('.badge');
+            if (badge) badge.remove();
+          });
+        }
+      } catch (error) {
+        console.error('Error marking all notifications as read:', error);
+      }
+    });
+
+    notifications.forEach(notification => {
+      notification.addEventListener('click', async function(e) {
+        if (!this.classList.contains('bg-light')) return;
+
+        const notificationId = this.dataset.notificationId;
+        try {
+          const response = await fetch(`{% url "notifications:mark_read" 0 %}`.replace('0', notificationId), {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+          });
+          if (response.ok) {
+            this.classList.remove('bg-light');
+            const badge = this.querySelector('.badge');
+            if (badge) badge.remove();
+          }
+        } catch (error) {
+          console.error('Error marking notification as read:', error);
+        }
+      });
+    });
+  });
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              document
+                .querySelectorAll(".list-group-item-info")
+                .forEach((item) => {
+                  item.classList.remove("list-group-item-info");
+                });
+              document.querySelectorAll(".mark-read").forEach((button) => {
+                button.remove();
+              });
+            }
+          });
+      });
+    }
+  });
+</script>
+{% endblock %} {% endblock %}

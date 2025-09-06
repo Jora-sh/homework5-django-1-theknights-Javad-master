@@ -1,0 +1,232 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Register as
+Employer | Job Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="text-center mb-4">Create Employer Account</h2>
+
+          {% if messages %} {% for message in messages %}
+          <div
+            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            role="alert"
+          >
+            {{ message }}
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="alert"
+              aria-label="Close"
+            ></button>
+          </div>
+          {% endfor %} {% endif %}
+
+          <form method="post">
+            {% csrf_token %} {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label
+                for="{{ form.company_name.id_for_label }}"
+                class="form-label"
+                >Company Name</label
+              >
+              {{ form.company_name }} {% if form.company_name.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.company_name.errors %} 
+                {{ error }} 
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label
+                  for="{{ form.first_name.id_for_label }}"
+                  class="form-label"
+                  >First Name</label
+                >
+                {{ form.first_name }} {% if form.first_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.first_name.errors %} 
+                  {{ error }} 
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <label
+                  for="{{ form.last_name.id_for_label }}"
+                  class="form-label"
+                  >Last Name</label
+                >
+                {{ form.last_name }} {% if form.last_name.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.last_name.errors %} 
+                  {{ error }} 
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.email.id_for_label }}" class="form-label"
+                >Email Address</label
+              >
+              {{ form.email }} {% if form.email.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.email.errors %} {{ error }} {% endfor %}
+              </div>
+              {% endif %}
+              <div class="form-text">
+                This will be used for login and communication.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label
+                for="{{ form.company_website.id_for_label }}"
+                class="form-label"
+                >Company Website</label
+              >
+              {{ form.company_website }} {% if form.company_website.errors %}
+              <div class="invalid-feedback d-block">
+                {% for error in form.company_website.errors %} 
+                {{ error }} 
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label
+                  for="{{ form.password1.id_for_label }}"
+                  class="form-label"
+                  >Password</label
+                >
+                {{ form.password1 }} {% if form.password1.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.password1.errors %} 
+                  {{ error }} 
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+              <div class="col-md-6">
+                <label
+                  for="{{ form.password2.id_for_label }}"
+                  class="form-label"
+                  >Confirm Password</label
+                >
+                {{ form.password2 }} {% if form.password2.errors %}
+                <div class="invalid-feedback d-block">
+                  {% for error in form.password2.errors %} 
+                  {{ error }} 
+                  {% endfor %}
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="mb-3 form-check">
+              <input
+                type="checkbox"
+                class="form-check-input"
+                id="termsCheck"
+                required
+              />
+              <label class="form-check-label" for="termsCheck">
+                I agree to the
+                <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal"
+                  >Terms and Conditions</a
+                >
+              </label>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                Create Employer Account
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <p>
+              Already have an account?
+              <a href="{% url 'accounts:login' %}">Log in</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div
+  class="modal fade"
+  id="termsModal"
+  tabindex="-1"
+  aria-labelledby="termsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="termsModalLabel">
+          Terms and Conditions for Employers
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <h6>1. Employer Agreement</h6>
+        <p>
+          By registering as an employer on Job Portal, you agree to abide by
+          these terms and conditions.
+        </p>
+
+        <h6>2. Job Postings</h6>
+        <p>
+          Employers must ensure that all job postings are accurate, legal, and
+          do not discriminate against protected groups.
+        </p>
+
+        <h6>3. Data Usage</h6>
+        <p>
+          Employer accounts may access candidate information solely for
+          recruitment purposes related to posted jobs.
+        </p>
+
+        <h6>4. Payment Terms</h6>
+        <p>
+          Some employer features may require payment. All payments are
+          non-refundable unless otherwise specified.
+        </p>
+
+        <h6>5. Account Termination</h6>
+        <p>
+          Job Portal reserves the right to suspend or terminate employer
+          accounts that violate these terms.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+          I Agree
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

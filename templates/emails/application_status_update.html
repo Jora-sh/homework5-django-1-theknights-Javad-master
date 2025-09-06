@@ -1,0 +1,45 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}
+Application Status Update - Job Portal
+{% endblock %}
+
+{% block header %}
+Application Status Update
+{% endblock %}
+
+{% block content %}
+<p>Hi {{ user.first_name }},</p>
+
+<div class="alert alert-{{ status_class }}">
+  <strong>Your application status has been updated!</strong>
+</div>
+
+<div class="details">
+  <h3>{{ job.title }}</h3>
+  <p><strong>Company:</strong> {{ job.company }}</p>
+  <p><strong>Location:</strong> {{ job.location }}</p>
+  <p>
+    <strong>Status:</strong>
+    <span class="status status-{{ status_class }}">{{ status_display }}</span>
+  </p>
+  {% if status_message %}
+  <p>{{ status_message }}</p>
+  {% endif %}
+</div>
+
+<p>
+  You can view the full details of your application by clicking the button below:
+</p>
+
+<a href="{{ site_url }}{% url 'dashboard:application_detail' application.id %}" class="button">
+  View Application Details
+</a>
+
+<p>Keep checking your dashboard for any updates on your application.</p>
+
+<p>
+  Best regards,<br>
+  The Job Portal Team
+</p>
+{% endblock %}

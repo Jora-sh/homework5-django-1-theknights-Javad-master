@@ -1,0 +1,86 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Apply for {{
+job.title }} | {{ job.company }} | Job Portal{% endblock %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Apply for: {{ job.title }}</h2>
+          <h5 class="card-subtitle mb-3 text-muted">
+            {{ job.company }} | {{ job.location }}
+          </h5>
+
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-4">
+              <label for="{{ form.resume.id_for_label }}" class="form-label"
+                >Upload Resume*</label
+              >
+              {{ form.resume }}
+              <div class="form-text">
+                Accepted formats: PDF, DOC, DOCX. Max size: 2MB
+              </div>
+              {% if form.resume.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.resume.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="mb-4">
+              <label
+                for="{{ form.cover_letter.id_for_label }}"
+                class="form-label"
+                >Cover Letter (Optional)</label
+              >
+              {{ form.cover_letter }}
+              <div class="form-text">
+                Explain why you're a good fit for this position.
+              </div>
+              {% if form.cover_letter.errors %}
+              <div class="invalid-feedback d-block">
+                {{ form.cover_letter.errors }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <a
+                href="{% url 'jobs:job_detail' job.id %}"
+                class="btn btn-outline-secondary"
+                >Cancel</a
+              >
+              <button type="submit" class="btn btn-primary">
+                Submit Application
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header">Job Details</div>
+        <div class="card-body">
+          <div class="mb-3">
+            <span class="badge bg-info text-dark"
+              >{{ job.get_job_type_display }}</span
+            >
+            <span class="badge bg-warning text-dark"
+              >{{ job.get_salary_display }}</span
+            >
+          </div>
+
+          <h5>Job Description</h5>
+          <div class="mb-4">
+            {{ job.description|linebreaks|truncatewords:100 }}
+            <a href="{% url 'jobs:job_detail' job.id %}"
+              >Read full description</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

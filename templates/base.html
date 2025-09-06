@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Job Portal{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+    />
+
+    <!-- Custom CSS -->
+    <style>
+      .navbar-brand {
+        font-weight: bold;
+      }
+      footer {
+        margin-top: 2rem;
+        padding: 2rem 0;
+        background-color: #f8f9fa;
+      }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="/">Job Portal</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'jobs:job_list' %}"
+                >Browse Jobs</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'core:about' %}">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'core:contact' %}">Contact</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+            <!-- Notifications Dropdown -->
+            <li class="nav-item dropdown me-3">
+              <a
+                class="nav-link"
+                href="#"
+                id="notificationsDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                data-notifications-count="0"
+              >
+                <i class="bi bi-bell"></i>
+                <span
+                  id="notifications-badge"
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.5rem; display: none"
+                >
+                  0
+                </span>
+              </a>
+              <div
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="notificationsDropdown"
+                style="width: 300px; max-height: 400px; overflow-y: auto"
+              >
+                <div
+                  class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom"
+                >
+                  <h6 class="mb-0">Notifications</h6>
+                  <a href="#" class="text-decoration-none" id="markAllRead"
+                    >Mark all as read</a
+                  >
+                </div>
+                <div id="notificationsList">
+                  <!-- Notifications will be dynamically inserted here -->
+                  <div class="text-center py-3">
+                    <span class="text-muted">No new notifications</span>
+                  </div>
+                </div>
+                <div class="dropdown-divider mb-0"></div>
+                <a
+                  class="dropdown-item text-center"
+                  href="{% url 'notifications:list' %}"
+                  >View all notifications</a
+                >
+              </div>
+            </li>
+            <!-- User Dropdown -->
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="navbarDropdown"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+              </a>
+              <ul
+                class="dropdown-menu dropdown-menu-end"
+                aria-labelledby="navbarDropdown"
+              >
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'dashboard:dashboard' %}"
+                    ><i class="bi bi-speedometer2"></i> Dashboard</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'accounts:profile' %}"
+                    ><i class="bi bi-person"></i> Profile</a
+                  >
+                </li>
+                {% if user.is_employer %}
+                <li>
+                  <a class="dropdown-item" href="{% url 'jobs:post_job' %}"
+                    ><i class="bi bi-plus-circle"></i> Post a Job</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="{% url 'dashboard:posted_jobs' %}"
+                    ><i class="bi bi-briefcase"></i> My Jobs</a
+                  >
+                </li>
+                {% endif %}
+                <li><hr class="dropdown-divider" /></li>
+                <li>
+                  <form
+                    method="post"
+                    action="{% url 'accounts:logout' %}"
+                    class="d-inline"
+                  >
+                    {% csrf_token %}
+                    <button type="submit" class="dropdown-item">
+                      <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'accounts:login' %}"
+                ><i class="bi bi-box-arrow-in-right"></i> Login</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'accounts:register' %}"
+                ><i class="bi bi-person-plus"></i> Register</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message|safe }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main>{% block content %}{% endblock %}</main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <h5>Job Portal</h5>
+            <p>
+              The best place to find your dream job or the perfect candidate.
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h5>Quick Links</h5>
+            <ul class="list-unstyled">
+              <li><a href="{% url 'core:home' %}">Home</a></li>
+              <li><a href="{% url 'jobs:job_list' %}">Browse Jobs</a></li>
+              <li><a href="{% url 'core:about' %}">About Us</a></li>
+              <li><a href="{% url 'core:contact' %}">Contact Us</a></li>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <h5>Contact</h5>
+            <address>
+              <strong>Job Portal Inc.</strong><br />
+              123 Employment Ave<br />
+              Jobville, CA 12345<br />
+              <abbr title="Phone">P:</abbr> (123) 456-7890
+            </address>
+          </div>
+        </div>
+        <hr />
+        <div class="text-center">
+          <p class="mb-0">
+            &copy; {% now "Y" %} Job Portal. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% if user.is_authenticated %}
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let notificationCount = 0;
+        const notificationsList = document.getElementById("notificationsList");
+        const notificationsBadge = document.getElementById(
+          "notifications-badge"
+        );
+        const markAllReadBtn = document.getElementById("markAllRead");
+
+        // Function to update notifications badge
+        function updateNotificationsBadge() {
+          if (notificationCount > 0) {
+            notificationsBadge.style.display = "block";
+            notificationsBadge.textContent = notificationCount;
+          } else {
+            notificationsBadge.style.display = "none";
+          }
+        }
+
+        // Function to fetch notifications
+        async function fetchNotifications() {
+          try {
+            const response = await fetch(
+              '{% url "notifications:list" %}?format=json'
+            );
+            const data = await response.json();
+
+            notificationCount = data.unread_count;
+            updateNotificationsBadge();
+
+            // Update notifications list
+            if (data.notifications.length > 0) {
+              notificationsList.innerHTML = data.notifications
+                .map(
+                  (notification) => `
+                <div class="dropdown-item-text ${
+                  notification.is_read ? "text-muted" : ""
+                }" data-notification-id="${notification.id}">
+                  <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                      <div class="fw-bold">${notification.title}</div>
+                      <div class="small">${notification.message}</div>
+                      <small class="text-muted">${
+                        notification.created_at
+                      }</small>
+                    </div>
+                    ${
+                      !notification.is_read
+                        ? '<div class="ms-2"><span class="badge bg-primary rounded-pill">New</span></div>'
+                        : ""
+                    }
+                  </div>
+                </div>
+                <div class="dropdown-divider"></div>
+              `
+                )
+                .join("");
+            } else {
+              notificationsList.innerHTML = `
+                <div class="text-center py-3">
+                  <span class="text-muted">No notifications</span>
+                </div>
+              `;
+            }
+          } catch (error) {
+            console.error("Error fetching notifications:", error);
+          }
+        }
+
+        // Fetch notifications on page load
+        fetchNotifications();
+
+        // Set up polling for new notifications every 30 seconds
+        setInterval(fetchNotifications, 30000);
+
+        // Handle mark all as read
+        markAllReadBtn.addEventListener("click", async function (e) {
+          e.preventDefault();
+          try {
+            const response = await fetch(
+              '{% url "notifications:mark_all_read" %}',
+              {
+                method: "POST",
+                headers: {
+                  "X-CSRFToken": document.querySelector(
+                    "[name=csrfmiddlewaretoken]"
+                  ).value,
+                },
+              }
+            );
+            if (response.ok) {
+              notificationCount = 0;
+              updateNotificationsBadge();
+              fetchNotifications();
+            }
+          } catch (error) {
+            console.error("Error marking notifications as read:", error);
+          }
+        });
+
+        // Handle individual notification clicks
+        notificationsList.addEventListener("click", async function (e) {
+          const notificationEl = e.target.closest("[data-notification-id]");
+          if (
+            notificationEl &&
+            !notificationEl.classList.contains("text-muted")
+          ) {
+            const notificationId = notificationEl.dataset.notificationId;
+            try {
+              const response = await fetch(
+                `{% url "notifications:mark_read" 0 %}`.replace(
+                  "0",
+                  notificationId
+                ),
+                {
+                  method: "POST",
+                  headers: {
+                    "X-CSRFToken": document.querySelector(
+                      "[name=csrfmiddlewaretoken]"
+                    ).value,
+                  },
+                }
+              );
+              if (response.ok) {
+                notificationCount = Math.max(0, notificationCount - 1);
+                updateNotificationsBadge();
+                notificationEl.classList.add("text-muted");
+                const badge = notificationEl.querySelector(".badge");
+                if (badge) badge.remove();
+              }
+            } catch (error) {
+              console.error("Error marking notification as read:", error);
+            }
+          }
+        });
+      });
+    </script>
+    {% endif %} {% block extra_js %}{% endblock %}
+  </body>
+</html>

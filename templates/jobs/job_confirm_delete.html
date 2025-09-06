@@ -1,0 +1,58 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Delete Job: {{
+job.title }} | Job Portal{% endblock %} {% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 mx-auto">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-danger">Delete Job Posting</h2>
+
+          <div class="alert alert-warning">
+            <p>
+              Are you sure you want to delete the job posting:
+              <strong>{{ job.title }}</strong>?
+            </p>
+            <p class="mb-0">
+              This action cannot be undone. All applications for this job will
+              also be deleted.
+            </p>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-body">
+              <h5 class="card-title">{{ job.title }}</h5>
+              <h6 class="card-subtitle mb-2 text-muted">{{ job.company }}</h6>
+              <p>
+                <span class="badge bg-info text-dark"
+                  >{{ job.get_job_type_display }}</span
+                >
+                <span class="badge bg-secondary">{{ job.location }}</span>
+                <span class="badge bg-warning text-dark"
+                  >{{ job.get_salary_display }}</span
+                >
+              </p>
+              <p class="card-text">
+                Posted: {{ job.created_at|date:"F j, Y" }}
+              </p>
+            </div>
+          </div>
+
+          <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+              <a
+                href="{% url 'dashboard:posted_jobs' %}"
+                class="btn btn-outline-secondary"
+                >Cancel</a
+              >
+              <button type="submit" class="btn btn-danger">
+                Yes, Delete Job
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  {{ job.title }} | {{ job.company }} | Job Portal
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8">
+      <!-- Job Details -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h2 class="card-title">{{ job.title }}</h2>
+          <h5 class="card-subtitle mb-3 text-muted">{{ job.company }}</h5>
+
+          <div class="mb-3">
+            <span class="badge bg-info text-dark">{{ job.get_job_type_display }}</span>
+            <span class="badge bg-secondary">{{ job.location }}</span>
+            <span class="badge bg-warning text-dark">{{ job.get_salary_display }}</span>
+          </div>
+
+          <p class="card-text text-muted mb-4">
+            <small>Posted {{ job.created_at|timesince }} ago</small>
+          </p>
+
+          <h5>Job Description</h5>
+          <div class="mb-4">{{ job.description|linebreaks }}</div>
+
+          <h5>Requirements</h5>
+          <div>{{ job.requirements|linebreaks }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <!-- Application Panel -->
+      <div class="card">
+        <div class="card-body">
+          {% if user.is_authenticated %}
+            {% if user.is_seeker %}
+              {% if has_applied %}
+                <div class="alert alert-success">
+                  <h5 class="alert-heading">Application Submitted!</h5>
+                  <p>You have already applied for this job.</p>
+                </div>
+              {% else %}
+                <h5 class="card-title">Apply for this Job</h5>
+                <form method="post" enctype="multipart/form-data" action="{% url 'jobs:apply_job' job.id %}">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                    <label for="{{ application_form.resume.id_for_label }}" class="form-label">Upload Resume</label>
+                    {{ application_form.resume }}
+                    <div class="form-text">Accepted formats: PDF, DOC, DOCX. Max size: 2MB</div>
+                    {% if application_form.resume.errors %}
+                      <div class="invalid-feedback d-block">
+                        {{ application_form.resume.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <div class="mb-3">
+                    <label for="{{ application_form.cover_letter.id_for_label }}" class="form-label">Cover Letter (Optional)</label>
+                    {{ application_form.cover_letter }}
+                    {% if application_form.cover_letter.errors %}
+                      <div class="invalid-feedback d-block">
+                        {{ application_form.cover_letter.errors }}
+                      </div>
+                    {% endif %}
+                  </div>
+
+                  <button type="submit" class="btn btn-primary w-100">Submit Application</button>
+                </form>
+              {% endif %}
+            {% elif user.is_employer %}
+              <div class="alert alert-info">
+                <h5 class="alert-heading">Employer Account</h5>
+                <p>As an employer, you cannot apply for jobs.</p>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="alert alert-warning">
+              <h5 class="alert-heading">Sign In Required</h5>
+              <p>
+                Please <a href="{% url 'accounts:login' %}?next={{ request.path }}">sign in</a> to apply for this job.
+              </p>
+              <hr />
+              <p class="mb-0">
+                Don't have an account?
+                <a href="{% url 'accounts:seeker_register' %}">Register as Job Seeker</a>
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Company Info -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h5 class="card-title">About {{ job.company }}</h5>
+          <p class="card-text">This job was posted by an employer on our platform.</p>
+          <a href="{% url 'jobs:job_list' %}?keyword={{ job.company }}" class="btn btn-outline-primary btn-sm">
+            View all jobs by this company
+          </a>
+        </div>
+      </div>
+
+      <!-- Similar Jobs -->
+      <div class="card mt-4">
+        <div class="card-header">Similar Jobs</div>
+        <div class="list-group list-group-flush">
+          {% for similar_job in job.user.posted_jobs.all|slice:":5" %}
+            {% if similar_job.is_active and similar_job.id != job.id %}
+              <a href="{% url 'jobs:job_detail' similar_job.id %}" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h6 class="mb-1">{{ similar_job.title }}</h6>
+                </div>
+                <small>{{ similar_job.location }}</small>
+              </a>
+            {% endif %}
+          {% empty %}
+            <div class="list-group-item">No similar jobs found.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Job Listings
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

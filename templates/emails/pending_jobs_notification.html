@@ -1,0 +1,52 @@
+{% extends "emails/base_email.html" %} {% block title %}Jobs Pending Approval -
+Job Portal{% endblock %} {% block header %}Jobs Pending Approval{% endblock %}
+{% block content %}
+<p>Hi {{ admin.first_name }},</p>
+
+<div class="alert alert-warning">
+  <strong
+    >There are {{ pending_count }} job{% if pending_count != 1 %}s{% endif %}
+    pending your approval.</strong
+  >
+</div>
+
+{% if pending_jobs %}
+<div class="details">
+  <h3>Pending Jobs:</h3>
+  {% for job in pending_jobs %}
+  <div
+    style="
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eee;
+    "
+  >
+    <h4>{{ job.title }}</h4>
+    <p><strong>Company:</strong> {{ job.company }}</p>
+    <p><strong>Posted by:</strong> {{ job.user.email }}</p>
+    <p><strong>Location:</strong> {{ job.location }}</p>
+    <p><strong>Posted on:</strong> {{ job.created_at|date:"F j, Y" }}</p>
+    <p>
+      <a
+        href="{{ site_url }}{% url 'dashboard:job_approval' job.id %}"
+        class="button"
+        style="margin: 5px 0"
+        >Review Job</a
+      >
+    </p>
+  </div>
+  {% endfor %}
+</div>
+
+<p>Please review these job postings at your earliest convenience.</p>
+
+<a href="{{ site_url }}{% url 'dashboard:job_moderation' %}" class="button"
+  >Go to Job Moderation</a
+>
+{% endif %}
+
+<p>
+  Best regards,<br />
+  The Job Portal Team
+</p>
+{% endblock %}

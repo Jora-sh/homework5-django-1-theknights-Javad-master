@@ -1,0 +1,19 @@
+{% extends "emails/base_email.html" %}
+
+{% block email_title %}
+Welcome Back!
+{% endblock %}
+
+{% block email_content %}
+<p>Hello {{ user.get_full_name|default:user.username }},</p>
+
+<p>
+  Welcome back to our platform! You have successfully logged in at {{ now|date:"Y-m-d H:i:s" }}.
+</p>
+
+<p>
+  If you didn't initiate this login, please contact our support team immediately.
+</p>
+
+<p>Thank you for using our platform!</p>
+{% endblock %}

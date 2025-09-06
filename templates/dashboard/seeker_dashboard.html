@@ -1,0 +1,213 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Job Seeker
+Dashboard | Job Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="mb-0">My Dashboard</h1>
+      <p class="text-muted">Welcome back, {{ user.get_full_name }}</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a href="{% url 'jobs:job_list' %}" class="btn btn-primary">
+        <i class="bi bi-search me-2"></i>Browse Jobs
+      </a>
+    </div>
+  </div>
+
+  {% if messages %} {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %}
+
+  <!-- Application Stats -->
+  <div class="row mb-4">
+    <div class="col-md-12">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-4">Application Statistics</h5>
+          <div class="row text-center">
+            <div class="col">
+              <div class="display-5 fw-bold text-primary mb-2">
+                {{ total_applications }}
+              </div>
+              <div class="text-muted">Total Applications</div>
+            </div>
+            <div class="col">
+              <div class="display-5 fw-bold text-warning mb-2">
+                {{ pending }}
+              </div>
+              <div class="text-muted">Pending</div>
+            </div>
+            <div class="col">
+              <div class="display-5 fw-bold text-info mb-2">
+                {{ reviewing }}
+              </div>
+              <div class="text-muted">Reviewing</div>
+            </div>
+            <div class="col">
+              <div class="display-5 fw-bold text-success mb-2">
+                {{ shortlisted }}
+              </div>
+              <div class="text-muted">Shortlisted</div>
+            </div>
+            <div class="col">
+              <div class="display-5 fw-bold text-danger mb-2">
+                {{ rejected }}
+              </div>
+              <div class="text-muted">Rejected</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Applications -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card border-0 shadow-sm">
+        <div
+          class="card-header bg-white py-3 d-flex justify-content-between align-items-center"
+        >
+          <h5 class="card-title mb-0">Recent Applications</h5>
+          <a
+            href="{% url 'dashboard:applications' %}"
+            class="btn btn-sm btn-outline-primary"
+            >View All</a
+          >
+        </div>
+        <div class="card-body p-0">
+          {% if applications %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Job Title</th>
+                  <th>Company</th>
+                  <th>Applied On</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for application in applications|slice:":5" %}
+                <tr>
+                  <td>{{ application.job.title }}</td>
+                  <td>{{ application.job.company }}</td>
+                  <td>{{ application.applied_at|date:"M d, Y" }}</td>
+                  <td>
+                    {% if application.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif application.status == 'reviewing' %}
+                    <span class="badge bg-info">Reviewing</span>
+                    {% elif application.status == 'shortlisted' %}
+                    <span class="badge bg-primary">Shortlisted</span>
+                    {% elif application.status == 'rejected' %}
+                    <span class="badge bg-danger">Rejected</span>
+                    {% elif application.status == 'accepted' %}
+                    <span class="badge bg-success">Accepted</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <a
+                      href="{% url 'dashboard:application_detail' application.id %}"
+                      class="btn btn-sm btn-outline-primary"
+                      >View</a
+                    >
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="bi bi-file-earmark-text fs-1 text-muted"></i>
+            </div>
+            <h5>No Applications Yet</h5>
+            <p class="mb-4">You haven't applied to any jobs yet.</p>
+            <a href="{% url 'jobs:job_list' %}" class="btn btn-primary"
+              >Browse Jobs</a
+            >
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resume Section -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="card-title mb-0">Resume</h5>
+        </div>
+        <div class="card-body">
+          {% if user.resume %}
+          <p class="mb-3">Your resume is ready to be shared with employers.</p>
+          <div class="d-flex align-items-center mb-3">
+            <i class="bi bi-file-earmark-pdf fs-4 me-2 text-danger"></i>
+            <span>{{ user.resume.name|truncatechars:30 }}</span>
+          </div>
+          <div class="d-grid gap-2">
+            <a
+              href="{{ user.resume.url }}"
+              target="_blank"
+              class="btn btn-sm btn-outline-primary"
+            >
+              <i class="bi bi-eye me-1"></i> View Resume
+            </a>
+            <a
+              href="{% url 'accounts:edit_profile' %}"
+              class="btn btn-sm btn-outline-secondary"
+            >
+              <i class="bi bi-pencil me-1"></i> Update Resume
+            </a>
+          </div>
+          {% else %}
+          <p class="mb-3">
+            You haven't uploaded a resume yet. Upload your resume to apply for
+            jobs more quickly.
+          </p>
+          <div class="d-grid">
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+              <i class="bi bi-upload me-1"></i> Upload Resume
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-white py-3">
+          <h5 class="card-title mb-0">Job Recommendations</h5>
+        </div>
+        <div class="card-body">
+          <p class="mb-3">
+            Complete your profile to get better job recommendations based on
+            your skills and experience.
+          </p>
+          <div class="d-grid">
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary">
+              <i class="bi bi-pencil-square me-1"></i> Complete Profile
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

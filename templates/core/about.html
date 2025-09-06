@@ -1,0 +1,132 @@
+{% extends 'base.html' %} {% load static %} {% block title %}About Us | Job
+Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-5">
+    <div class="col-md-8 mx-auto text-center">
+      <h1 class="display-5 fw-bold mb-4">About Job Portal</h1>
+      <p class="lead">
+        Connecting talented professionals with great companies since 2023.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-md-6">
+      <h2 class="mb-4">Our Mission</h2>
+      <p>
+        At Job Portal, our mission is to make the job search and hiring process
+        easier, more transparent, and more effective for everyone involved. We
+        believe that the right job can change a person's life, and the right
+        hire can transform a business.
+      </p>
+      <p>
+        We're dedicated to creating a platform that connects employers with
+        qualified candidates, streamlines the application process, and provides
+        valuable resources for job seekers at every stage of their career.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <img
+        src="https://source.unsplash.com/random/600x400/?office"
+        alt="Office Space"
+        class="img-fluid rounded shadow"
+      />
+    </div>
+  </div>
+
+  <div class="row mb-5 flex-md-row-reverse">
+    <div class="col-md-6">
+      <h2 class="mb-4">Our Story</h2>
+      <p>
+        Job Portal was founded in 2023 by a team of industry professionals who
+        recognized the need for a more efficient and user-friendly job
+        marketplace. Having experienced the challenges of job hunting and
+        recruitment firsthand, our founders set out to create a solution that
+        would benefit both employers and job seekers.
+      </p>
+      <p>
+        What started as a small startup has grown into a trusted platform used
+        by thousands of companies and job seekers. We continue to innovate and
+        improve our services based on user feedback and industry trends.
+      </p>
+    </div>
+    <div class="col-md-6">
+      <img
+        src="https://source.unsplash.com/random/600x400/?team"
+        alt="Team Working"
+        class="img-fluid rounded shadow"
+      />
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12 text-center">
+      <h2 class="mb-4">Our Values</h2>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="mb-3">
+            <i class="bi bi-stars fs-1 text-primary"></i>
+          </div>
+          <h4>Excellence</h4>
+          <p>
+            We strive for excellence in everything we do, from our platform's
+            performance to our customer service.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="mb-3">
+            <i class="bi bi-shield-check fs-1 text-primary"></i>
+          </div>
+          <h4>Integrity</h4>
+          <p>
+            We operate with honesty and transparency, building trust with our
+            users through ethical practices.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm">
+        <div class="card-body text-center p-4">
+          <div class="mb-3">
+            <i class="bi bi-lightbulb fs-1 text-primary"></i>
+          </div>
+          <h4>Innovation</h4>
+          <p>
+            We continuously improve our platform and services, embracing new
+            technologies and ideas.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 text-center">
+      <h2 class="mb-4">Join Us Today</h2>
+      <p class="lead mb-4">
+        Whether you're looking for your next career opportunity or searching for
+        top talent to join your team, Job Portal is here to help you succeed.
+      </p>
+      <div class="d-flex justify-content-center gap-3">
+        <a
+          href="{% url 'accounts:seeker_register' %}"
+          class="btn btn-primary btn-lg"
+          >Sign Up as Job Seeker</a
+        >
+        <a
+          href="{% url 'accounts:employer_register' %}"
+          class="btn btn-outline-primary btn-lg"
+          >Sign Up as Employer</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

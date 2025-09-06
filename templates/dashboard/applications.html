@@ -1,0 +1,107 @@
+{% extends 'base.html' %} {% load static %} {% block title %}My Applications |
+Job Portal{% endblock %} {% block content %}
+<div class="container py-5">
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <h1 class="mb-0">My Applications</h1>
+      <p class="text-muted">Track the status of your job applications</p>
+    </div>
+    <div class="col-md-4 text-end">
+      <a
+        href="{% url 'dashboard:seeker_dashboard' %}"
+        class="btn btn-outline-primary me-2"
+      >
+        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+      </a>
+      <a href="{% url 'jobs:job_list' %}" class="btn btn-primary">
+        <i class="bi bi-search me-1"></i>Browse Jobs
+      </a>
+    </div>
+  </div>
+
+  {% if messages %} {% for message in messages %}
+  <div
+    class="alert alert-{{ message.tags }} alert-dismissible fade show"
+    role="alert"
+  >
+    {{ message }}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %}
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      {% if applications %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Location</th>
+              <th>Applied On</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for application in applications %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'jobs:job_detail' application.job.id %}"
+                  class="text-decoration-none fw-bold"
+                >
+                  {{ application.job.title }}
+                </a>
+              </td>
+              <td>{{ application.job.company }}</td>
+              <td>{{ application.job.location }}</td>
+              <td>{{ application.applied_at|date:"M d, Y" }}</td>
+              <td>
+                {% if application.status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+                {% elif application.status == 'reviewing' %}
+                <span class="badge bg-info">Reviewing</span>
+                {% elif application.status == 'shortlisted' %}
+                <span class="badge bg-primary">Shortlisted</span>
+                {% elif application.status == 'rejected' %}
+                <span class="badge bg-danger">Rejected</span>
+                {% elif application.status == 'accepted' %}
+                <span class="badge bg-success">Accepted</span>
+                {% endif %}
+              </td>
+              <td>
+                <a
+                  href="{% url 'dashboard:application_detail' application.id %}"
+                  class="btn btn-sm btn-outline-primary"
+                >
+                  <i class="bi bi-eye me-1"></i>View
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <i class="bi bi-file-earmark-text fs-1 text-muted"></i>
+        </div>
+        <h4>No Applications Found</h4>
+        <p class="mb-4">You haven't applied to any jobs yet.</p>
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-primary"
+          >Browse Jobs</a
+        >
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
